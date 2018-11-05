@@ -1,0 +1,31 @@
+{
+  "name": "mmm-modal",
+  "version": "1.0.0",
+  "description": "Modal window Module for MagicMirror2",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fewieden/MMM-Modal.git"
+  },
+  "keywords": [
+    "MagicMirror",
+    "modal",
+    "popup"
+  ],
+  "author": "fewieden",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fewieden/MMM-Modal/issues"
+  },
+  "homepage": "https://github.com/fewieden/MMM-Modal#readme",
+  "scripts": {
+    "lint": "./node_modules/.bin/eslint . && ./node_modules/.bin/stylelint .",
+    "docs": "./node_modules/.bin/jsdoc -c jsdoc.json ."
+  },
+  "devDependencies": {
+    "eslint": "^3.14.1",
+    "eslint-config-airbnb-base": "^11.0.1",
+    "eslint-plugin-import": "^2.2.0",
+    "stylelint": "^7.8.0",
+    "stylelint-config-standard": "^16.0.0"
+  }
+}
