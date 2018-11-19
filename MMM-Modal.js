@@ -37,10 +37,18 @@ Module.register('MMM-Modal', {
 
     /**
      * @member {boolean} active - Flag that indicates if there is currently a modal displayed.
-     * @property {string} mode - Voice mode of this module.
-     * @property {string[]} sentences - List of voice commands of this module.
      */
     active: false,
+
+    /**
+     * @member {string} defaultTemplate - Path to fallback of inner modal template.
+     */
+    defaultTemplate: 'MMM-Modal/InnerTemplate.njk',
+
+    /**
+     * @member {string|null} pathTemplate - Path to inner modal template.
+     */
+    innerTemplate: null,
 
     /**
      * @member {Object} voice - Defines the default mode and commands of this module.
@@ -88,13 +96,13 @@ Module.register('MMM-Modal', {
     notificationReceived(notification, payload, sender) {
         if (notification === 'ALL_MODULES_STARTED') {
             this.sendNotification('REGISTER_VOICE_MODULE', this.voice);
-        } else if (notification === 'VOICE_MODAL' && sender.name === 'MMM-voice') {
+        } else if (notification === `VOICE_${this.voice.mode}` && sender.name === 'MMM-voice') {
             this.handleModals(payload);
         } else if (notification === 'VOICE_MODE_CHANGED' && sender.name === 'MMM-voice'
             && payload.old === this.voice.mode) {
             this.closeModal();
         } else if (notification === 'OPEN_MODAL') {
-
+            this.handleModals(notification, payload, sender ? sender.name : null);
         } else if (notification === 'CLOSE_MODAL') {
             this.closeModal();
         }
@@ -108,7 +116,7 @@ Module.register('MMM-Modal', {
      * @returns {string[]} List of the style dependency filepaths.
      */
     getStyles() {
-        return ['MMM-Modal.css'];
+        return [`${this.name}.css`];
     },
 
     /**
@@ -133,7 +141,7 @@ Module.register('MMM-Modal', {
      * @returns {string} Path to nunjuck template.
      */
     getTemplate() {
-        return 'MMM-Modal.njk';
+        return `${this.name}/${this.name}.njk`;
     },
 
     /**
@@ -145,7 +153,7 @@ Module.register('MMM-Modal', {
      */
     getTemplateData() {
         return {
-            template: this.modalTemplate,
+            template: this.innerTemplate || this.defaultTemplate,
             data: this.modalData
         };
     },
@@ -153,18 +161,24 @@ Module.register('MMM-Modal', {
     /**
      * @function handleModals
      * @description Hide/show modules based on voice commands or module notifications.
+     *
+     * @param {string} command - Command for open and closing the modal.
+     * @param {*} payload - Detailed payload of the notification.
+     * @param {object} senderName - Name of the module that sent the command.
      */
-    handleModals(data, payload) {
-        if (/CLOSE/g.test(data) && !/OPEN/g.test(data)) {
+    handleModals(command, payload, senderName) {
+        if (/CLOSE/g.test(command) && !/OPEN/g.test(command)) {
             this.closeModal();
-        } else if (/OPEN/g.test(data) && !/CLOSE/g.test(data)) {
+        } else if (/OPEN/g.test(command) && !/CLOSE/g.test(command)) {
             let modal = payload;
 
-            if (!modal) {
+            if (!senderName) {
                 modal = {
-                    template: 'HelpModal.njk',
+                    template: `${this.name}/HelpModal.njk`,
                     data: this.voice
                 }
+            } else {
+                modal.template = `${senderName}/${modal.template}`;
             }
 
             this.openModal(modal);
@@ -172,19 +186,42 @@ Module.register('MMM-Modal', {
     },
 
     /**
-     * @function openModal
-     * @description Sets and opens the modal.
+     * @function nunjuckPath
+     * @description Path to modules directory for nunjuck loader.
+     *
+     * @returns {string} File path.
      */
-    openModal(modal) {
-        if (!Object.prototype.hasOwnProperty(modal, 'template')) {
-            Log.error('The modal needs to have the property template');
-            return;
+    nunjuckPath() {
+        return this.data.path.replace(this.name, '').replace('//', '/');
+    },
+
+    /**
+     * @function file
+	 * @description Retrieve the path to a module file.
+     * @override
+     *
+     * @param {string} file - File name
+     *
+     * @returns {string} File path.
+	 */
+    file: function (file) {
+        if (file === '') {
+            return this.nunjuckPath();
         }
 
+        return (`${this.data.path}/${file}`).replace('//', '/');
+    },
+
+    /**
+     * @function openModal
+     * @description Sets and opens the modal.
+     *
+     * @param {object} modal - Modal object that should be displayed
+     */
+    openModal(modal) {
         this.active = true;
         this.toggleBlur();
-
-        this.modalTemplate = modal.template;
+        this.innerTemplate = modal.template;
         this.modalData = modal.data;
         this.updateDom(300);
     },
@@ -200,6 +237,8 @@ Module.register('MMM-Modal', {
 
         clearTimeout(this.timer);
         this.active = false;
+        this.innerTemplate = null;
+        this.modalData = null;
         this.toggleBlur();
         this.updateDom(300);
     },

@@ -2,12 +2,14 @@
 
 Modal window Module for MagicMirror²
 
+## Example
+
+![](.github/example.png)
+
 ## Dependencies
 
 * An installation of [MagicMirror²](https://github.com/MichMich/MagicMirror)
 * OPTIONAL: [Voice Control](https://github.com/fewieden/MMM-voice)
-* npm
-* [node-fetch](https://www.npmjs.com/package/node-fetch)
 
 ## Installation
 
@@ -22,8 +24,6 @@ Modal window Module for MagicMirror²
         }
     }
     ```
-
-1. Run command `npm i --production` in `~/MagicMirror/modules/MMM-Modal` directory.
 
 ## Config Options
 
@@ -47,3 +47,7 @@ The voice control mode for this module is `MODAL`
 * OPEN HELP -> Shows the information from the readme here with mode and all commands.
 * CLOSE HELP -> Hides the help information.
 * CLOSE MODAL -> Closes the open modal.
+
+## Developers
+
+If you want to integrate MMM-Modal into your own modules, than please check out the developer guide [here]()
