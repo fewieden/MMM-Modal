@@ -50,4 +50,4 @@ The voice control mode for this module is `MODAL`
 
 ## Developers
 
-If you want to integrate MMM-Modal into your own modules, than please check out the developer guide [here]()
+If you want to integrate MMM-Modal into your own modules, then please check out the developer [guide](DEVELOPER.md)
