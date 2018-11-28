@@ -17,6 +17,39 @@
     margin: 0;
 }
 
+.MMM-Modal .modal > header,
+.MMM-Modal .modal > footer {
+    display: flex;
+    justify-content: space-between;
+}
+
+.MMM-Modal .btn-close,
+.MMM-Modal .btn-cancel,
+.MMM-Modal .btn-confirm {
+    outline: none;
+}
+
+.MMM-Modal .btn-close {
+    border: none;
+    background: transparent;
+    color: #aaa;
+}
+
+.MMM-Modal .btn-cancel {
+    border: 2px solid #aaa;
+    background: transparent;
+    color: #aaa;
+    padding: 10px 20px;
+}
+
+.MMM-Modal .btn-confirm {
+    border: 2px solid #aaa;
+    background: #aaa;
+    color: black;
+    padding: 10px 20px;
+}
+
+
 .MMM-Modal-blur {
     -webkit-filter: blur(2px) brightness(50%);
     -moz-filter: blur(2px) brightness(50%);

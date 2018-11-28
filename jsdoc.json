@@ -5,7 +5,9 @@
   "source": {
     "include": [
       "package.json",
-      "README.md"
+      "README.md",
+      "DEVELOPER.md",
+      "CHANGELOG.md"
     ],
     "exclude": [
       "node_modules"

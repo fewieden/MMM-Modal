@@ -1,6 +1,6 @@
 # MMM-Modal Development Documentation
 
-This document describes the way to support your own MagicMirror² module with modal windows.
+This document describes the way to support your own MagicMirror² module with modal/dialog windows.
 
 ## Open a modal
 
@@ -14,6 +14,7 @@ The notification needs to have the name `OPEN_MODAL` and a payload object, that 
 {
     template: '',
     data: {}
+    options: {}
 }
 ```
 
@@ -30,7 +31,7 @@ MagicMirror
     |-templates
       |-AnotherTemplate.njk
 ```
-Than the template path would look the following:
+Than the template path would look the following way:
 ```javascript
 {
     template: 'ModalTemplate.njk',
@@ -63,6 +64,23 @@ Let's assume we have something like:
 }
 ``` 
 
+#### Options
+
+The modal windows can be customized by you as the developer with the following options:
+
+| **Option** | **Default** | **Description** |
+| --- | --- | --- |
+| `isDialog` | `false` | This flag will give the user the possibility to act on your modal as a dialog (confirm, cancel) if he has `touch` enabled in his config. Click [here]() for more informations. |
+
+```javascript
+{
+    ...
+    options: {
+        isDialog: false
+    }
+}
+```
+
 ## Template
 
 There is an outer and inner template. The outer template is provided by `MMM-Modal` and renders the inner template (`your template`).
@@ -72,13 +90,30 @@ There is an outer and inner template. The outer template is provided by `MMM-Mod
 The outer template is rendering the inner template and looks as follow:
 ```
 <div class="modal">
-    {% include template %}
+    {% if config.showSenderName or config.touch %}
+        <header>
+            <span>{% if config.showSenderName %}{{senderName}}{% endif %}</span>
+            {% if config.touch %}
+                <button class="btn-close">{{'CLOSE' | translate}}</button>
+            {% endif %}
+        </header>
+    {% endif %}
+
+    {% include senderName + '/' + template %}
+
+    {% if config.touch and options.isDialog %}
+        <footer>
+            <button class="btn-cancel small">{{'CANCEL' | translate}}</button>
+            <button class="btn-confirm small">{{'CONFIRM' | translate}}</button>
+        </footer>
+    {% endif %}
 </div>
+
 ```
 
 ### Inner template
 
-The inner template is your nunjuck template. Here you can access your `data` with handlebars syntax {{data.myNumber}}
+The inner template is your nunjuck template. Here you can access your `data` with handlebars syntax `{{data.myNumber}}`
 
 ## Example
 
@@ -96,4 +131,64 @@ MyModal.njk would look like:
 ```
 <h1 class="bright">Hello {{data.name}}</h1>
 ```
- And this is the expected result.
+And this is the expected result.
+![](.github/example_dev.png)
+
+## Dialogs
+
+An example notification to open a dialog would be sent like that.
+```javascript
+this.sendNotification("OPEN_MODAL", {
+    template: "MyModal.njk",
+    data: {
+        name: 'John Doe',
+        destination: 'Central Station',
+        costs: 13.45,
+        currency: '€'
+    },
+    options: {
+    	isDialog: true
+    }
+});
+```
+
+MyModal.njk would look like:
+```
+<h2 class="bright">Hello {{data.name}},</h2>
+<p>do you want to order your Uber to {{data.destination}} for {{data.costs}}{{data.currency}}?</p>
+```
+And this is the expected result.
+![](.github/example_dialog.png)
+
+### Closing Dialog
+
+If the user is tapping close, does the same action via voice or the non touch timer runs out, then `MMM-Modal` sends a notification `MODAL_CLOSED` with the payload
+
+```
+{
+    identifier: 'module_2_YourModule',
+    confirmed: false
+}
+```
+
+### Canceling Dialog
+
+If the user is tapping cancel or does the same action via voice, then `MMM-Modal` sends a notification `MODAL_CLOSED` with the payload
+
+```
+{
+    identifier: 'module_2_YourModule',
+    confirmed: false
+}
+```
+
+### Confirming Dialog
+
+If the user is tapping confirm or does the same action via voice, then `MMM-Modal` sends a notification `MODAL_CLOSED` with the payload
+
+```
+{
+    identifier: 'module_2_YourModule',
+    confirmed: true
+}
+```

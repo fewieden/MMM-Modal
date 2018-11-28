@@ -1,3 +1,7 @@
 {
-  "CLOSE": "Schließen"
+  "MODE": "Modus",
+  "VOICE_COMMANDS": "Sprach Kommandos",
+  "CLOSE": "Schließen X",
+  "CANCEL": "Abbrechen",
+  "CONFIRM": "Bestätigen"
 }

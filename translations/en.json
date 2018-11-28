@@ -1,3 +1,7 @@
 {
-  "CLOSE": "Close"
+  "MODE": "Mode",
+  "VOICE_COMMANDS": "Voice commands",
+  "CLOSE": "Close X",
+  "CANCEL": "Cancel",
+  "CONFIRM": "Confirm"
 }

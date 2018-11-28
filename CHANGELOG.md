@@ -3,6 +3,9 @@
 ## [1.0.0]
 
 - js module
+- dialogs
+- voice support
+- touch support
 - nunjuck templates
 - developer guide
 - github templates

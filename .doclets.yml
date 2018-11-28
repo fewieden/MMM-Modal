@@ -3,6 +3,7 @@ packageJson: package.json
 articles:
   - Overview: README.md
   - Changelog: CHANGELOG.md
+  - Developer: DEVELOPER.md
   - License: LICENSE
 branches:
   - master

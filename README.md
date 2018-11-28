@@ -4,7 +4,7 @@ Modal window Module for MagicMirror²
 
 ## Example
 
-![](.github/example.png)
+![](.github/example.png) ![](.github/example_dialog.png)
 
 ## Dependencies
 
@@ -29,7 +29,9 @@ Modal window Module for MagicMirror²
 
 | **Option** | **Default** | **Description** |
 | --- | --- | --- |
-| `timer` | false | Either `false` (buttons/voice control) or milliseconds how long a modal should remain open. |
+| `timer` | `15000` | Either `false` (buttons/voice control) or milliseconds how long a modal should remain open. |
+| `touch` | `false` | Flag to enable touchable buttons fot closing the modal or handle dialogs. |
+| `showSenderName` | `true` | Flag to display the name of the sender module or not. |
 
 ## OPTIONAL: Voice Control
 
@@ -47,6 +49,8 @@ The voice control mode for this module is `MODAL`
 * OPEN HELP -> Shows the information from the readme here with mode and all commands.
 * CLOSE HELP -> Hides the help information.
 * CLOSE MODAL -> Closes the open modal.
+* CANCEL MODAL -> Cancel the dialog.
+* CONFIRM MODAL -> Confirm the dialog.
 
 ## Developers
 

@@ -1,3 +1,19 @@
 <div class="modal">
-    {% include template %}
+    {% if config.showSenderName or config.touch %}
+        <header>
+            <span>{% if config.showSenderName %}{{senderName}}{% endif %}</span>
+            {% if config.touch %}
+                <button class="btn-close">{{'CLOSE' | translate}}</button>
+            {% endif %}
+        </header>
+    {% endif %}
+
+    {% include senderName + '/' + template %}
+
+    {% if config.touch and options.isDialog %}
+        <footer>
+            <button class="btn-cancel small">{{'CANCEL' | translate}}</button>
+            <button class="btn-confirm small">{{'CONFIRM' | translate}}</button>
+        </footer>
+    {% endif %}
 </div>
