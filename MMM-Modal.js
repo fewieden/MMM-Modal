@@ -30,25 +30,28 @@ Module.register('MMM-Modal', {
     /**
      * @member {Object} defaults - Defines the default config values.
      * @property {boolean|number} timer - Flag to disable timer or seconds to show modal.
+     * @property {boolean} touch - Flag to en-/disable touch support.
+     * @property {boolean} showModuleName - Flag to show/hide the module name of the modal.
      */
     defaults: {
-        timer: false
+        timer: 15 * 1000,
+        touch: false,
+        showModuleName: true
     },
-
-    /**
-     * @member {boolean} active - Flag that indicates if there is currently a modal displayed.
-     */
-    active: false,
 
     /**
      * @member {string} defaultTemplate - Path to fallback of inner modal template.
      */
-    defaultTemplate: 'MMM-Modal/InnerTemplate.njk',
+    defaultTemplate: 'InnerTemplate.njk',
 
     /**
-     * @member {string|null} pathTemplate - Path to inner modal template.
+     * @member {object|null} modal - Modal with template path, data and options.
+     * @property {string} template - Path to modal template.
+     * @property {string} senderName - Name of the module which sent the modal.
+     * @property {object} data - Dynamic values for displaying in the modal.
+     * @property {object} options - Options for displaying in the modal.
      */
-    innerTemplate: null,
+    modal: {},
 
     /**
      * @member {Object} voice - Defines the default mode and commands of this module.
@@ -60,27 +63,30 @@ Module.register('MMM-Modal', {
         sentences: [
             'OPEN HELP',
             'CLOSE HELP',
-            'CLOSE MODAL'
+            'CLOSE MODAL',
+            'CANCEL MODAL',
+            'CONFIRM MODAL',
         ]
     },
 
     /**
-     * @function createFetchInterval
-     * @description Creates an interval to fetch standings periodically.
+     * @function createTimer
+     * @description Creates a timeout to close modal after specified time.
      */
     createTimer() {
         if (this.config.timer) {
-            this.timer = setTimeout(this.closeModal, this.config.timer);
+            clearTimeout(this.timer);
+            this.timer = setTimeout(() => this.closeModal(false), this.config.timer);
         }
     },
 
     /**
      * @function suspend
-     * @description Clears the fetch interval when the module gets suspended, to avoid request to the API.
+     * @description Closes the current modal when the module gets suspended.
      * @override
      */
     suspend() {
-        this.closeModal();
+        this.closeModal(false);
         Log.log(`${this.name} is suspended.`);
     },
 
@@ -100,12 +106,27 @@ Module.register('MMM-Modal', {
             this.handleModals(payload);
         } else if (notification === 'VOICE_MODE_CHANGED' && sender.name === 'MMM-voice'
             && payload.old === this.voice.mode) {
-            this.closeModal();
+            this.closeModal(false);
         } else if (notification === 'OPEN_MODAL') {
-            this.handleModals(notification, payload, sender ? sender.name : null);
-        } else if (notification === 'CLOSE_MODAL') {
-            this.closeModal();
+            this.handleModals(notification, payload, sender);
+        } else if (this.isDialogAction(notification, sender)) {
+            this.handleModals(notification, payload, sender);
+        } else if (notification === 'CLOSE_MODAL' || notification === 'DOM_OBJECTS_CREATED') {
+            this.closeModal(false);
         }
+    },
+
+    /**
+     * @function isDialogAction
+     * @description Checks if the modal contains a dialog action and the sender is owner of the modal.
+     *
+     * @returns {boolean}
+     */
+    isDialogAction(notification, sender) {
+        const identifier = sender ? sender.identifier : this.identifier;
+
+        return this.modal && identifier === this.modal.identifier && this.modal.options && this.modal.options.isDialog === true
+            && (notification === 'CANCEL_MODAL' || notification === 'CONFIRM_MODAL');
     },
 
     /**
@@ -149,39 +170,56 @@ Module.register('MMM-Modal', {
      * @description Data that gets rendered in the nunjuck template.
      * @override
      *
-     * @returns {string} Data for the nunjuck template.
+     * @returns {object} Data for the nunjuck template.
      */
     getTemplateData() {
+        if (!this.modal) {
+            return {};
+        }
+
         return {
-            template: this.innerTemplate || this.defaultTemplate,
-            data: this.modalData
+            config: this.config,
+            senderName: this.modal.senderName || this.name,
+            template: this.modal.template || this.defaultTemplate,
+            data: this.modal.data || {},
+            options: this.modal.options || {}
         };
     },
 
     /**
      * @function handleModals
-     * @description Hide/show modules based on voice commands or module notifications.
+     * @description Hide/show modals based on voice commands or module notifications.
      *
      * @param {string} command - Command for open and closing the modal.
      * @param {*} payload - Detailed payload of the notification.
-     * @param {object} senderName - Name of the module that sent the command.
+     * @param {object} sender - Contains name and identifier of the module, which sent the command.
      */
-    handleModals(command, payload, senderName) {
+    handleModals(command, payload, sender) {
         if (/CLOSE/g.test(command) && !/OPEN/g.test(command)) {
-            this.closeModal();
+            this.closeModal(false);
+        } else if (/CANCEL/g.test(command) && !/CONFIRM/g.test(command)) {
+            this.closeModal(false);
+        } else if (/CONFIRM/g.test(command) && !/CANCEL/g.test(command)) {
+            this.closeModal(true);
         } else if (/OPEN/g.test(command) && !/CLOSE/g.test(command)) {
             let modal = payload;
 
-            if (!senderName) {
+            if (!sender) {
                 modal = {
-                    template: `${this.name}/HelpModal.njk`,
-                    data: this.voice
+                    identifier: this.identifier,
+                    senderName: this.name,
+                    template: 'HelpModal.njk',
+                    data: this.voice,
+                    options: {}
                 }
             } else {
-                modal.template = `${senderName}/${modal.template}`;
+                modal.senderName = sender.name;
+                modal.identifier = sender.identifier;
             }
 
-            this.openModal(modal);
+            this.modal = modal;
+
+            this.openModal();
         }
     },
 
@@ -193,6 +231,45 @@ Module.register('MMM-Modal', {
      */
     nunjuckPath() {
         return this.data.path.replace(this.name, '').replace('//', '/');
+    },
+
+    /**
+     * @function getDom
+     * @description Generates the DOM of the module. Called by the MagicMirror² core.
+     * @override
+     *
+     * @returns {Element} The DOM to display.
+     */
+    getDom(){
+        const wrapper = document.createElement("div");
+
+        this.nunjucksEnvironment().render(this.getTemplate(), this.getTemplateData(), (err, res) => {
+            if (err) {
+                Log.error(err)
+            }
+
+            wrapper.innerHTML = res;
+
+            if (this.config.touch) {
+                const actions = [
+                    {name: 'close', confirmed: false},
+                    {name: 'cancel', confirmed: false},
+                    {name: 'confirm', confirmed: true},
+                ];
+
+                for (const {name, confirmed} of actions) {
+                    const element = wrapper.querySelector(`.btn-${name}`);
+
+                    if (element) {
+                        element.addEventListener('click', () => {
+                            this.closeModal(confirmed);
+                        });
+                    }
+                }
+            }
+        });
+
+        return wrapper;
     },
 
     /**
@@ -214,33 +291,37 @@ Module.register('MMM-Modal', {
 
     /**
      * @function openModal
-     * @description Sets and opens the modal.
-     *
-     * @param {object} modal - Modal object that should be displayed
+     * @description Displays the modal.
      */
-    openModal(modal) {
-        this.active = true;
+    openModal() {
+        this.createTimer();
         this.toggleBlur();
-        this.innerTemplate = modal.template;
-        this.modalData = modal.data;
-        this.updateDom(300);
+        this.updateDom(0);
+        this.show(300);
     },
 
     /**
      * @function closeModal
      * @description Close the current modal.
+     *
+     * @param {boolean} confirmed - Was the dialog of the modal confirmed or not.
      */
-    closeModal() {
-        if (!this.active) {
+    closeModal(confirmed) {
+        if (!this.modal) {
             return;
         }
 
+        if (this.modal.identifier !== this.identifier) {
+            this.sendNotification('MODAL_CLOSED', {
+                identifier: this.modal.identifier,
+                confirmed
+            });
+        }
+
         clearTimeout(this.timer);
-        this.active = false;
-        this.innerTemplate = null;
-        this.modalData = null;
+        this.modal = null;
+        this.hide(300);
         this.toggleBlur();
-        this.updateDom(300);
     },
 
     /**
@@ -251,7 +332,7 @@ Module.register('MMM-Modal', {
         const modules = document.querySelectorAll('.module');
         for (let i = 0; i < modules.length; i += 1) {
             if (!modules[i].classList.contains('MMM-Modal')) {
-                if (this.active) {
+                if (this.modal) {
                     modules[i].classList.add('MMM-Modal-blur');
                 } else {
                     modules[i].classList.remove('MMM-Modal-blur');
