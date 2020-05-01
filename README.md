@@ -21,6 +21,7 @@ Modal window Module for MagicMirror²
 ```js
 {
     module: 'MMM-Modal',
+    position: 'fullscreen_above',
     config: {
         ...
     }

@@ -4,6 +4,7 @@
 
 .MMM-Modal .modal {
     position: fixed;
+    z-index: 20;
     text-align: left;
     left: 50%;
     top: 50%;

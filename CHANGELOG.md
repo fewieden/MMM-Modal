@@ -2,13 +2,14 @@
 
 ## [1.0.1]
 
-### Added
+### Fixed
 
-*
+* Modal positioning
 
 ### Changed
 
-* EsLint ruleset from `airbnb` to `recommended`
+* ESLint ruleset from `airbnb` to `recommended`
+* Moved nunjuck templates in separate directory
 
 ### Removed
 

@@ -42,7 +42,7 @@ Module.register('MMM-Modal', {
     /**
      * @member {string} defaultTemplate - Path to fallback of inner modal template.
      */
-    defaultTemplate: 'InnerTemplate.njk',
+    defaultTemplate: 'templates/InnerTemplate.njk',
 
     /**
      * @member {object|null} modal - Modal with template path, data and options.
@@ -167,7 +167,7 @@ Module.register('MMM-Modal', {
      * @returns {string} Path to nunjuck template.
      */
     getTemplate() {
-        return `${this.name}/${this.name}.njk`;
+        return `${this.name}/templates/${this.name}.njk`;
     },
 
     /**
@@ -178,6 +178,14 @@ Module.register('MMM-Modal', {
      * @returns {object} Data for the nunjuck template.
      */
     getTemplateData() {
+        console.log('modal', !!this.modal);
+        console.log('data', {
+            config: this.config,
+            senderName: this.modal.senderName || this.name,
+            template: this.modal.template || this.defaultTemplate,
+            data: this.modal.data || {},
+            options: this.modal.options || {}
+        });
         if (!this.modal) {
             return {};
         }
@@ -212,10 +220,11 @@ Module.register('MMM-Modal', {
             let modal = payload;
 
             if (!sender) {
+                console.log('no sender');
                 modal = {
                     identifier: this.identifier,
                     senderName: this.name,
-                    template: 'HelpModal.njk',
+                    template: 'templates/HelpModal.njk',
                     data: this.voice,
                     options: {}
                 }
