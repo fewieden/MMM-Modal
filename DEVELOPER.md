@@ -192,3 +192,7 @@ If the user is tapping confirm or does the same action via voice, then `MMM-Moda
     confirmed: true
 }
 ```
+
+## Module List
+
+Once you successfully integrated your module with MMM-Modal, don't forget to add it to the [list](https://github.com/fewieden/MMM-Modal/wiki/Depending-Modules).

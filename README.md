@@ -55,6 +55,10 @@ The voice control mode for this module is `MODAL`
 * CANCEL MODAL -> Cancel the dialog.
 * CONFIRM MODAL -> Confirm the dialog.
 
+## Depending Modules
+
+List of all modules depending on MMM-Modal in the [Wiki](https://github.com/fewieden/MMM-Modal/wiki/Depending-Modules).
+
 ## Developers
 
 If you want to integrate MMM-Modal into your own modules, then please check out the developer [guide](DEVELOPER.md)

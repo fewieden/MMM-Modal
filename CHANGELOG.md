@@ -6,6 +6,10 @@
 
 * Modal positioning
 
+### Added
+
+* [List of depending modules](https://github.com/fewieden/MMM-Modal/wiki/Depending-Modules)
+
 ### Changed
 
 * ESLint ruleset from `airbnb` to `recommended`
