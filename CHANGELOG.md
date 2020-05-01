@@ -10,6 +10,7 @@
 
 * ESLint ruleset from `airbnb` to `recommended`
 * Moved nunjuck templates in separate directory
+* node versions for travis
 
 ### Removed
 
