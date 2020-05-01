@@ -1,4 +1,6 @@
-# MMM-Modal [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://raw.githubusercontent.com/fewieden/MMM-Modal/master/LICENSE) [![Build Status](https://travis-ci.org/fewieden/MMM-Modal.svg?branch=master)](https://travis-ci.org/fewieden/MMM-Modal) [![Code Climate](https://codeclimate.com/github/fewieden/MMM-Modal/badges/gpa.svg?style=flat)](https://codeclimate.com/github/fewieden/MMM-Modal) [![Known Vulnerabilities](https://snyk.io/test/github/fewieden/mmm-modal/badge.svg)](https://snyk.io/test/github/fewieden/mmm-modal) [![API Doc](https://doclets.io/fewieden/MMM-Modal/master.svg)](https://doclets.io/fewieden/MMM-Modal/master)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://raw.githubusercontent.com/fewieden/MMM-Modal/master/LICENSE) [![Build Status](https://travis-ci.org/fewieden/MMM-Modal.svg?branch=master)](https://travis-ci.org/fewieden/MMM-Modal) [![Code Climate](https://codeclimate.com/github/fewieden/MMM-Modal/badges/gpa.svg?style=flat)](https://codeclimate.com/github/fewieden/MMM-Modal) [![Known Vulnerabilities](https://snyk.io/test/github/fewieden/mmm-modal/badge.svg)](https://snyk.io/test/github/fewieden/mmm-modal)
+
+# MMM-Modal
 
 Modal window Module for MagicMirror²
 
@@ -13,17 +15,17 @@ Modal window Module for MagicMirror²
 
 ## Installation
 
-1. Clone this repo into `~/MagicMirror/modules` directory.
-1. Configure your `~/MagicMirror/config/config.js`:
+* Clone this repo into `~/MagicMirror/modules` directory.
+* Configure your `~/MagicMirror/config/config.js`:
 
-    ```
-    {
-        module: 'MMM-Modal',
-        config: {
-            ...
-        }
+```js
+{
+    module: 'MMM-Modal',
+    config: {
+        ...
     }
-    ```
+}
+```
 
 ## Config Options
 
@@ -55,3 +57,6 @@ The voice control mode for this module is `MODAL`
 ## Developers
 
 If you want to integrate MMM-Modal into your own modules, then please check out the developer [guide](DEVELOPER.md)
+
+* `npm run lint` - Lints JS and CSS files.
+* `npm run docs` - Generates documentation.

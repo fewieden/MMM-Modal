@@ -72,6 +72,8 @@ Module.register('MMM-Modal', {
     /**
      * @function createTimer
      * @description Creates a timeout to close modal after specified time.
+     *
+     * @returns {void}
      */
     createTimer() {
         if (this.config.timer) {
@@ -120,7 +122,10 @@ Module.register('MMM-Modal', {
      * @function isDialogAction
      * @description Checks if the modal contains a dialog action and the sender is owner of the modal.
      *
-     * @returns {boolean}
+     * @param {string} notification - Notification received from other module.
+     * @param {string} sender - Module which send the notification.
+     *
+     * @returns {boolean} Is the notification a valid dialog action?
      */
     isDialogAction(notification, sender) {
         const identifier = sender ? sender.identifier : this.identifier;
@@ -193,6 +198,8 @@ Module.register('MMM-Modal', {
      * @param {string} command - Command for open and closing the modal.
      * @param {*} payload - Detailed payload of the notification.
      * @param {object} sender - Contains name and identifier of the module, which sent the command.
+     *
+     * @returns {void}
      */
     handleModals(command, payload, sender) {
         if (/CLOSE/g.test(command) && !/OPEN/g.test(command)) {
@@ -240,8 +247,8 @@ Module.register('MMM-Modal', {
      *
      * @returns {Element} The DOM to display.
      */
-    getDom(){
-        const wrapper = document.createElement("div");
+    getDom() {
+        const wrapper = document.createElement('div');
 
         this.nunjucksEnvironment().render(this.getTemplate(), this.getTemplateData(), (err, res) => {
             if (err) {
@@ -252,12 +259,12 @@ Module.register('MMM-Modal', {
 
             if (this.config.touch) {
                 const actions = [
-                    {name: 'close', confirmed: false},
-                    {name: 'cancel', confirmed: false},
-                    {name: 'confirm', confirmed: true},
+                    { name: 'close', confirmed: false },
+                    { name: 'cancel', confirmed: false },
+                    { name: 'confirm', confirmed: true },
                 ];
 
-                for (const {name, confirmed} of actions) {
+                for (const { name, confirmed } of actions) {
                     const element = wrapper.querySelector(`.btn-${name}`);
 
                     if (element) {
@@ -281,17 +288,19 @@ Module.register('MMM-Modal', {
      *
      * @returns {string} File path.
 	 */
-    file: function (file) {
+    file(file) {
         if (file === '') {
             return this.nunjuckPath();
         }
 
-        return (`${this.data.path}/${file}`).replace('//', '/');
+        return `${this.data.path}/${file}`.replace('//', '/');
     },
 
     /**
      * @function openModal
      * @description Displays the modal.
+     *
+     * @returns {void}
      */
     openModal() {
         this.createTimer();
@@ -305,6 +314,8 @@ Module.register('MMM-Modal', {
      * @description Close the current modal.
      *
      * @param {boolean} confirmed - Was the dialog of the modal confirmed or not.
+     *
+     * @returns {void}
      */
     closeModal(confirmed) {
         if (!this.modal) {
@@ -327,6 +338,8 @@ Module.register('MMM-Modal', {
     /**
      * @function toggleBlur
      * @description Toggles blur over all modules. The DOM is addressed directly.
+     *
+     * @returns {void}
      */
     toggleBlur() {
         const modules = document.querySelectorAll('.module');
