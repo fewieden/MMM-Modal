@@ -9,6 +9,7 @@
 ### Added
 
 * [List of depending modules](https://github.com/fewieden/MMM-Modal/wiki/Depending-Modules)
+* Callback option after render for developers
 
 ### Changed
 

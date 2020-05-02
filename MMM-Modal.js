@@ -283,6 +283,10 @@ Module.register('MMM-Modal', {
                     }
                 }
             }
+
+            if (options.callback) {
+                options.callback(err ? false : true);
+            }
         });
 
         return wrapper;
