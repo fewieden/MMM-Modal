@@ -5,6 +5,7 @@
 ### Fixed
 
 * Modal positioning
+* Blur on render error
 
 ### Added
 

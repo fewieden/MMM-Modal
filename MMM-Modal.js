@@ -51,7 +51,7 @@ Module.register('MMM-Modal', {
      * @property {object} data - Dynamic values for displaying in the modal.
      * @property {object} options - Options for displaying in the modal.
      */
-    modal: {},
+    modal: null,
 
     /**
      * @member {Object} voice - Defines the default mode and commands of this module.
@@ -178,24 +178,19 @@ Module.register('MMM-Modal', {
      * @returns {object} Data for the nunjuck template.
      */
     getTemplateData() {
-        console.log('modal', !!this.modal);
-        console.log('data', {
-            config: this.config,
-            senderName: this.modal.senderName || this.name,
-            template: this.modal.template || this.defaultTemplate,
-            data: this.modal.data || {},
-            options: this.modal.options || {}
-        });
-        if (!this.modal) {
-            return {};
+        const senderName = this.modal.template ? this.modal.senderName : this.name;
+
+        let innerTemplate = this.defaultTemplate;
+        if (this.modal.template) {
+            innerTemplate = `${senderName}/${this.modal.template}`;
         }
 
         return {
+            innerTemplate,
+            senderName,
             config: this.config,
-            senderName: this.modal.senderName || this.name,
-            template: this.modal.template || this.defaultTemplate,
-            data: this.modal.data || {},
-            options: this.modal.options || {}
+            data: this.modal.data,
+            options: this.modal.options
         };
     },
 
@@ -217,10 +212,13 @@ Module.register('MMM-Modal', {
         } else if (/CONFIRM/g.test(command) && !/CANCEL/g.test(command)) {
             this.closeModal(true);
         } else if (/OPEN/g.test(command) && !/CLOSE/g.test(command)) {
+            if (this.modal) {
+                this.closeModal(false);
+            }
+
             let modal = payload;
 
             if (!sender) {
-                console.log('no sender');
                 modal = {
                     identifier: this.identifier,
                     senderName: this.name,
@@ -231,6 +229,8 @@ Module.register('MMM-Modal', {
             } else {
                 modal.senderName = sender.name;
                 modal.identifier = sender.identifier;
+                modal.options = modal.options || {};
+                modal.data = modal.data || {};
             }
 
             this.modal = modal;
@@ -259,11 +259,11 @@ Module.register('MMM-Modal', {
     getDom() {
         const wrapper = document.createElement('div');
 
-        this.nunjucksEnvironment().render(this.getTemplate(), this.getTemplateData(), (err, res) => {
-            if (err) {
-                Log.error(err)
-            }
+        if (!this.modal) {
+            return wrapper;
+        }
 
+        this.nunjucksEnvironment().render(this.getTemplate(), this.getTemplateData(), (err, res) => {
             wrapper.innerHTML = res;
 
             if (this.config.touch) {
@@ -284,8 +284,13 @@ Module.register('MMM-Modal', {
                 }
             }
 
-            if (options.callback) {
-                options.callback(err ? false : true);
+            if (this.modal.options.callback) {
+                this.modal.options.callback(err ? false : true);
+            }
+
+            if (err) {
+                Log.error(err)
+                this.closeModal(false);
             }
         });
 

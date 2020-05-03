@@ -208,6 +208,12 @@ If the user is tapping confirm or does the same action via voice, then `MMM-Moda
 }
 ```
 
+## Restrictions
+
+Currently, it is not possible to use the nunjuck filters of your module for the modals.
+In order to achieve something similar, you can pass the filters as js functions inside the data object and use it in the
+modal nunjuck template. Check the list below and see how other developers integrated it in their modules.
+
 ## Module List
 
 Once you successfully integrated your module with MMM-Modal, don't forget to add it to the [list](https://github.com/fewieden/MMM-Modal/wiki/Depending-Modules).

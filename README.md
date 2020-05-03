@@ -23,7 +23,7 @@ Modal window Module for MagicMirror²
     module: 'MMM-Modal',
     position: 'fullscreen_above',
     config: {
-        // all your config options which are different than their default values
+        // all your config options, which are different than their default values
     }
 }
 ```
