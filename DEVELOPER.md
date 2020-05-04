@@ -67,7 +67,7 @@ Let's assume we have something like:
         }
     }
 }
-``` 
+```
 
 #### Options
 
@@ -160,7 +160,7 @@ this.sendNotification("OPEN_MODAL", {
         currency: '€'
     },
     options: {
-    	isDialog: true
+        isDialog: true
     }
 });
 ```
