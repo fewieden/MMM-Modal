@@ -4,6 +4,7 @@
 
 .MMM-Modal .modal {
     position: fixed;
+    z-index: 20;
     text-align: left;
     left: 50%;
     top: 50%;
@@ -48,7 +49,6 @@
     color: black;
     padding: 10px 20px;
 }
-
 
 .MMM-Modal-blur {
     -webkit-filter: blur(2px) brightness(50%);

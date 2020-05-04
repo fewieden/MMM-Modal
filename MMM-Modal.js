@@ -42,7 +42,7 @@ Module.register('MMM-Modal', {
     /**
      * @member {string} defaultTemplate - Path to fallback of inner modal template.
      */
-    defaultTemplate: 'InnerTemplate.njk',
+    defaultTemplate: 'templates/InnerTemplate.njk',
 
     /**
      * @member {object|null} modal - Modal with template path, data and options.
@@ -51,7 +51,7 @@ Module.register('MMM-Modal', {
      * @property {object} data - Dynamic values for displaying in the modal.
      * @property {object} options - Options for displaying in the modal.
      */
-    modal: {},
+    modal: null,
 
     /**
      * @member {Object} voice - Defines the default mode and commands of this module.
@@ -72,6 +72,8 @@ Module.register('MMM-Modal', {
     /**
      * @function createTimer
      * @description Creates a timeout to close modal after specified time.
+     *
+     * @returns {void}
      */
     createTimer() {
         if (this.config.timer) {
@@ -120,7 +122,10 @@ Module.register('MMM-Modal', {
      * @function isDialogAction
      * @description Checks if the modal contains a dialog action and the sender is owner of the modal.
      *
-     * @returns {boolean}
+     * @param {string} notification - Notification received from other module.
+     * @param {string} sender - Module which send the notification.
+     *
+     * @returns {boolean} Is the notification a valid dialog action?
      */
     isDialogAction(notification, sender) {
         const identifier = sender ? sender.identifier : this.identifier;
@@ -162,7 +167,7 @@ Module.register('MMM-Modal', {
      * @returns {string} Path to nunjuck template.
      */
     getTemplate() {
-        return `${this.name}/${this.name}.njk`;
+        return `${this.name}/templates/${this.name}.njk`;
     },
 
     /**
@@ -173,16 +178,19 @@ Module.register('MMM-Modal', {
      * @returns {object} Data for the nunjuck template.
      */
     getTemplateData() {
-        if (!this.modal) {
-            return {};
+        const senderName = this.modal.template ? this.modal.senderName : this.name;
+
+        let innerTemplate = this.defaultTemplate;
+        if (this.modal.template) {
+            innerTemplate = `${senderName}/${this.modal.template}`;
         }
 
         return {
+            innerTemplate,
+            senderName,
             config: this.config,
-            senderName: this.modal.senderName || this.name,
-            template: this.modal.template || this.defaultTemplate,
-            data: this.modal.data || {},
-            options: this.modal.options || {}
+            data: this.modal.data,
+            options: this.modal.options
         };
     },
 
@@ -193,6 +201,8 @@ Module.register('MMM-Modal', {
      * @param {string} command - Command for open and closing the modal.
      * @param {*} payload - Detailed payload of the notification.
      * @param {object} sender - Contains name and identifier of the module, which sent the command.
+     *
+     * @returns {void}
      */
     handleModals(command, payload, sender) {
         if (/CLOSE/g.test(command) && !/OPEN/g.test(command)) {
@@ -202,19 +212,25 @@ Module.register('MMM-Modal', {
         } else if (/CONFIRM/g.test(command) && !/CANCEL/g.test(command)) {
             this.closeModal(true);
         } else if (/OPEN/g.test(command) && !/CLOSE/g.test(command)) {
+            if (this.modal) {
+                this.closeModal(false);
+            }
+
             let modal = payload;
 
             if (!sender) {
                 modal = {
                     identifier: this.identifier,
                     senderName: this.name,
-                    template: 'HelpModal.njk',
+                    template: 'templates/HelpModal.njk',
                     data: this.voice,
                     options: {}
                 }
             } else {
                 modal.senderName = sender.name;
                 modal.identifier = sender.identifier;
+                modal.options = modal.options || {};
+                modal.data = modal.data || {};
             }
 
             this.modal = modal;
@@ -240,24 +256,24 @@ Module.register('MMM-Modal', {
      *
      * @returns {Element} The DOM to display.
      */
-    getDom(){
-        const wrapper = document.createElement("div");
+    getDom() {
+        const wrapper = document.createElement('div');
+
+        if (!this.modal) {
+            return wrapper;
+        }
 
         this.nunjucksEnvironment().render(this.getTemplate(), this.getTemplateData(), (err, res) => {
-            if (err) {
-                Log.error(err)
-            }
-
             wrapper.innerHTML = res;
 
             if (this.config.touch) {
                 const actions = [
-                    {name: 'close', confirmed: false},
-                    {name: 'cancel', confirmed: false},
-                    {name: 'confirm', confirmed: true},
+                    { name: 'close', confirmed: false },
+                    { name: 'cancel', confirmed: false },
+                    { name: 'confirm', confirmed: true },
                 ];
 
-                for (const {name, confirmed} of actions) {
+                for (const { name, confirmed } of actions) {
                     const element = wrapper.querySelector(`.btn-${name}`);
 
                     if (element) {
@@ -266,6 +282,15 @@ Module.register('MMM-Modal', {
                         });
                     }
                 }
+            }
+
+            if (this.modal.options.callback) {
+                this.modal.options.callback(!err);
+            }
+
+            if (err) {
+                Log.error(err)
+                this.closeModal(false);
             }
         });
 
@@ -281,17 +306,19 @@ Module.register('MMM-Modal', {
      *
      * @returns {string} File path.
 	 */
-    file: function (file) {
+    file(file) {
         if (file === '') {
             return this.nunjuckPath();
         }
 
-        return (`${this.data.path}/${file}`).replace('//', '/');
+        return `${this.data.path}/${file}`.replace('//', '/');
     },
 
     /**
      * @function openModal
      * @description Displays the modal.
+     *
+     * @returns {void}
      */
     openModal() {
         this.createTimer();
@@ -305,6 +332,8 @@ Module.register('MMM-Modal', {
      * @description Close the current modal.
      *
      * @param {boolean} confirmed - Was the dialog of the modal confirmed or not.
+     *
+     * @returns {void}
      */
     closeModal(confirmed) {
         if (!this.modal) {
@@ -327,6 +356,8 @@ Module.register('MMM-Modal', {
     /**
      * @function toggleBlur
      * @description Toggles blur over all modules. The DOM is addressed directly.
+     *
+     * @returns {void}
      */
     toggleBlur() {
         const modules = document.querySelectorAll('.module');

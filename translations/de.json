@@ -3,5 +3,6 @@
   "VOICE_COMMANDS": "Sprach Kommandos",
   "CLOSE": "Schließen X",
   "CANCEL": "Abbrechen",
-  "CONFIRM": "Bestätigen"
+  "CONFIRM": "Bestätigen",
+  "TEMPLATE_REQUIRED": "Bitte gib ein Modal-Template an!"
 }

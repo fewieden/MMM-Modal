@@ -3,5 +3,6 @@
   "VOICE_COMMANDS": "Voice commands",
   "CLOSE": "Close X",
   "CANCEL": "Cancel",
-  "CONFIRM": "Confirm"
+  "CONFIRM": "Confirm",
+  "TEMPLATE_REQUIRED": "Please provide a modal template!"
 }

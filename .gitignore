@@ -38,3 +38,6 @@ jspm_packages
 
 # Documentation
 docs
+
+# Editors
+.idea
