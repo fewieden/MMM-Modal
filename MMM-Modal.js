@@ -285,7 +285,7 @@ Module.register('MMM-Modal', {
             }
 
             if (this.modal.options.callback) {
-                this.modal.options.callback(err ? false : true);
+                this.modal.options.callback(!err);
             }
 
             if (err) {
