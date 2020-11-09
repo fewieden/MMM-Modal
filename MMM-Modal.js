@@ -350,6 +350,7 @@ Module.register('MMM-Modal', {
         clearTimeout(this.timer);
         this.modal = null;
         this.hide(300);
+        this.updateDom(0);
         this.toggleBlur();
     },
 
