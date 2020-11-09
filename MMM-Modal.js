@@ -324,7 +324,7 @@ Module.register('MMM-Modal', {
         this.createTimer();
         this.toggleBlur();
         this.updateDom(0);
-        this.show(300);
+        this.show(300, {lockString: this.identifier});
     },
 
     /**
@@ -349,7 +349,7 @@ Module.register('MMM-Modal', {
 
         clearTimeout(this.timer);
         this.modal = null;
-        this.hide(300);
+        this.hide(300, {lockString: this.identifier});
         this.updateDom(0);
         this.toggleBlur();
     },
