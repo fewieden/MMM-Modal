@@ -28,6 +28,11 @@
  */
 Module.register('MMM-Modal', {
     /**
+     * @member {string} requiresVersion - Defines the required minimum version of the MagicMirror framework in order to run this verion of the module.
+     */
+    requiresVersion: '2.14.0',
+    
+    /**
      * @member {Object} defaults - Defines the default config values.
      * @property {boolean|number} timer - Flag to disable timer or seconds to show modal.
      * @property {boolean} touch - Flag to en-/disable touch support.
@@ -321,10 +326,11 @@ Module.register('MMM-Modal', {
      * @returns {void}
      */
     openModal() {
-        this.createTimer();
-        this.toggleBlur();
-        this.updateDom(0);
-        this.show(300, {lockString: this.identifier});
+        this.show(0, () => {
+            this.createTimer();
+            this.toggleBlur();
+            this.updateDom(300);
+        }, {lockString: this.identifier});
     },
 
     /**
@@ -349,8 +355,8 @@ Module.register('MMM-Modal', {
 
         clearTimeout(this.timer);
         this.modal = null;
-        this.hide(300, {lockString: this.identifier});
-        this.updateDom(0);
+        this.updateDom(300);
+        this.hide(0, {lockString: this.identifier});
         this.toggleBlur();
     },
 
