@@ -217,9 +217,7 @@ Module.register('MMM-Modal', {
         } else if (/CONFIRM/g.test(command) && !/CANCEL/g.test(command)) {
             this.closeModal(true);
         } else if (/OPEN/g.test(command) && !/CLOSE/g.test(command)) {
-            if (this.modal) {
-                this.closeModal(false);
-            }
+            this.notifyModule(false);
 
             let modal = payload;
 
@@ -334,6 +332,23 @@ Module.register('MMM-Modal', {
     },
 
     /**
+     * @function notifyModule
+     * @description Notify other module about dialog result.
+     *
+     * @param {boolean} confirmed - Was the dialog of the modal confirmed or not.
+     *
+     * @returns {void}
+     */
+    notifyModule(confirmed) {
+        if (this.modal && this.modal.identifier !== this.identifier) {
+            this.sendNotification('MODAL_CLOSED', {
+                identifier: this.modal.identifier,
+                confirmed
+            });
+        }
+    },
+
+    /**
      * @function closeModal
      * @description Close the current modal.
      *
@@ -346,12 +361,7 @@ Module.register('MMM-Modal', {
             return;
         }
 
-        if (this.modal.identifier !== this.identifier) {
-            this.sendNotification('MODAL_CLOSED', {
-                identifier: this.modal.identifier,
-                confirmed
-            });
-        }
+        this.notifyModule(confirmed);
 
         clearTimeout(this.timer);
         this.modal = null;
