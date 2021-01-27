@@ -31,7 +31,7 @@ Module.register('MMM-Modal', {
      * @member {string} requiresVersion - Defines the required minimum version of the MagicMirror framework in order to run this verion of the module.
      */
     requiresVersion: '2.14.0',
-    
+
     /**
      * @member {Object} defaults - Defines the default config values.
      * @property {boolean|number} timer - Flag to disable timer or seconds to show modal.
@@ -287,12 +287,13 @@ Module.register('MMM-Modal', {
                 }
             }
 
-            if (this.modal.options.callback) {
-                this.modal.options.callback(!err);
-            }
-
             if (err) {
-                Log.error(err)
+                Log.error('Rendering of modal failed', this.modal, err);
+
+                if (this.modal.options.callback) {
+                    this.modal.options.callback(false);
+                }
+
                 this.closeModal(false);
             }
         });
@@ -328,6 +329,11 @@ Module.register('MMM-Modal', {
             this.createTimer();
             this.toggleBlur();
             this.updateDom(300);
+            setTimeout(() => {
+                if (this.modal && this.modal.options.callback) {
+                    this.modal.options.callback(true);
+                }
+            }, 300);
         }, {lockString: this.identifier});
     },
 
