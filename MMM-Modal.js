@@ -288,10 +288,8 @@ Module.register('MMM-Modal', {
             }
 
             if (err) {
-                Log.error('Rendering of modal failed', this.modal, err);
-
                 if (this.modal.options.callback) {
-                    this.modal.options.callback(false);
+                    this.modal.options.callback(err);
                 }
 
                 this.closeModal(false);
@@ -328,13 +326,19 @@ Module.register('MMM-Modal', {
         this.show(0, () => {
             this.createTimer();
             this.toggleBlur();
+
             this.updateDom(300);
             setTimeout(() => {
                 if (this.modal && this.modal.options.callback) {
-                    this.modal.options.callback(true);
+                    this.modal.options.callback(null);
                 }
             }, 300);
-        }, {lockString: this.identifier});
+        }, {lockString: this.identifier}, (error) => {
+            Log.error('Could not show module because of', error);
+            if (this.modal && this.modal.options.callback) {
+                this.modal.options.callback(error);
+            }
+        });
     },
 
     /**
