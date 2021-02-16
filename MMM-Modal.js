@@ -271,12 +271,12 @@ Module.register('MMM-Modal', {
 
             if (this.config.touch) {
                 const actions = [
-                    { name: 'close', confirmed: false },
-                    { name: 'cancel', confirmed: false },
-                    { name: 'confirm', confirmed: true },
+                    {name: 'close', confirmed: false},
+                    {name: 'cancel', confirmed: false},
+                    {name: 'confirm', confirmed: true},
                 ];
 
-                for (const { name, confirmed } of actions) {
+                for (const {name, confirmed} of actions) {
                     const element = wrapper.querySelector(`.btn-${name}`);
 
                     if (element) {
