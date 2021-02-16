@@ -333,13 +333,16 @@ Module.register('MMM-Modal', {
                     this.modal.options.callback(null);
                 }
             }, 300);
-        }, {lockString: this.identifier, onError: (error) => {
-            Log.error('Could not show module because of', error);
+        }, {
+            lockString: this.identifier,
+            onError: error => {
+                Log.error('Could not show module because of', error);
 
-            if (this.modal && this.modal.options.callback) {
-                this.modal.options.callback(error);
+                if (this.modal && this.modal.options.callback) {
+                    this.modal.options.callback(error);
+                }
             }
-        }});
+        });
     },
 
     /**
