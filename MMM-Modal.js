@@ -28,6 +28,11 @@
  */
 Module.register('MMM-Modal', {
     /**
+     * @member {string} requiresVersion - Defines the required minimum version of the MagicMirror framework in order to run this verion of the module.
+     */
+    requiresVersion: '2.15.0',
+
+    /**
      * @member {Object} defaults - Defines the default config values.
      * @property {boolean|number} timer - Flag to disable timer or seconds to show modal.
      * @property {boolean} touch - Flag to en-/disable touch support.
@@ -212,9 +217,7 @@ Module.register('MMM-Modal', {
         } else if (/CONFIRM/g.test(command) && !/CANCEL/g.test(command)) {
             this.closeModal(true);
         } else if (/OPEN/g.test(command) && !/CLOSE/g.test(command)) {
-            if (this.modal) {
-                this.closeModal(false);
-            }
+            this.notifyModule(false);
 
             let modal = payload;
 
@@ -284,12 +287,11 @@ Module.register('MMM-Modal', {
                 }
             }
 
-            if (this.modal.options.callback) {
-                this.modal.options.callback(!err);
-            }
-
             if (err) {
-                Log.error(err)
+                if (this.modal.options.callback) {
+                    this.modal.options.callback(err);
+                }
+
                 this.closeModal(false);
             }
         });
@@ -321,10 +323,40 @@ Module.register('MMM-Modal', {
      * @returns {void}
      */
     openModal() {
-        this.createTimer();
-        this.toggleBlur();
-        this.updateDom(0);
-        this.show(300);
+        this.show(0, () => {
+            this.createTimer();
+            this.toggleBlur();
+
+            this.updateDom(300);
+            setTimeout(() => {
+                if (this.modal && this.modal.options.callback) {
+                    this.modal.options.callback(null);
+                }
+            }, 300);
+        }, {lockString: this.identifier, onError: (error) => {
+            Log.error('Could not show module because of', error);
+
+            if (this.modal && this.modal.options.callback) {
+                this.modal.options.callback(error);
+            }
+        }});
+    },
+
+    /**
+     * @function notifyModule
+     * @description Notify other module about dialog result.
+     *
+     * @param {boolean} confirmed - Was the dialog of the modal confirmed or not.
+     *
+     * @returns {void}
+     */
+    notifyModule(confirmed) {
+        if (this.modal && this.modal.identifier !== this.identifier) {
+            this.sendNotification('MODAL_CLOSED', {
+                identifier: this.modal.identifier,
+                confirmed
+            });
+        }
     },
 
     /**
@@ -340,16 +372,12 @@ Module.register('MMM-Modal', {
             return;
         }
 
-        if (this.modal.identifier !== this.identifier) {
-            this.sendNotification('MODAL_CLOSED', {
-                identifier: this.modal.identifier,
-                confirmed
-            });
-        }
+        this.notifyModule(confirmed);
 
         clearTimeout(this.timer);
         this.modal = null;
-        this.hide(300);
+        this.updateDom(300);
+        this.hide(0, {lockString: this.identifier});
         this.toggleBlur();
     },
 

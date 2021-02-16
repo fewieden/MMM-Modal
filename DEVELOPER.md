@@ -76,15 +76,19 @@ The modal windows can be customized by you as the developer with the following o
 | **Option** | **Default** | **Description** |
 | --- | --- | --- |
 | `isDialog` | `false` | This flag will give the user the possibility to act on your modal as a dialog (confirm, cancel) if he has `touch` enabled in his config. Click [here]() for more informations. |
-| `callback` | `undefined` | If you need to perform an action after the modal was rendered, you can pass a function as callback. The function will be called with `true` on success and `false` on failure. |
+| `callback` | `undefined` | If you need to perform an action after the modal was rendered, you can pass a function as callback. The function will be called with an error as first argument if the rendering failed. |
 
 ```js
 {
     // ...
     options: {
         isDialog: false,
-        callback(success) {
-            Log.info('Was render of modal successful?', success);
+        callback(error) {
+            if (error) {
+                Log.error('Modal rendering failed', error);
+            } else {
+                Log.info('Modal rendered successful');
+            }
         }
     }
 }
