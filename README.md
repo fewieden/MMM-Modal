@@ -1,4 +1,4 @@
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://raw.githubusercontent.com/fewieden/MMM-Modal/master/LICENSE) [![Build Status](https://travis-ci.org/fewieden/MMM-Modal.svg?branch=master)](https://travis-ci.org/fewieden/MMM-Modal) [![Code Climate](https://codeclimate.com/github/fewieden/MMM-Modal/badges/gpa.svg?style=flat)](https://codeclimate.com/github/fewieden/MMM-Modal) [![Known Vulnerabilities](https://snyk.io/test/github/fewieden/mmm-modal/badge.svg)](https://snyk.io/test/github/fewieden/mmm-modal)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://raw.githubusercontent.com/fewieden/MMM-Modal/master/LICENSE) ![Build status](https://github.com/fewieden/MMM-Modal/workflows/build/badge.svg) [![Code Climate](https://codeclimate.com/github/fewieden/MMM-Modal/badges/gpa.svg?style=flat)](https://codeclimate.com/github/fewieden/MMM-Modal) [![Known Vulnerabilities](https://snyk.io/test/github/fewieden/mmm-modal/badge.svg)](https://snyk.io/test/github/fewieden/mmm-modal)
 
 # MMM-Modal
 
@@ -38,9 +38,8 @@ Modal window Module for MagicMirror²
 
 ## OPTIONAL: Voice Control
 
-This module supports voice control by
-[MMM-voice](https://github.com/fewieden/MMM-voice). In order to use this
-feature, it's required to install the voice module. There are no extra config
+This module supports voice control by [MMM-voice](https://github.com/fewieden/MMM-voice).
+In order to use this feature, it's required to install the voice module. There are no extra config
 options for voice control needed.
 
 ### Mode
