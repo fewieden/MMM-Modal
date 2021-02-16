@@ -1,5 +1,15 @@
 # MMM-Modal Changelog
 
+## [Unreleased]
+
+### Fixed
+
+### Added
+
+### Changed
+
+### Removed
+
 ## [1.1.0]
 
 ### Fixed
