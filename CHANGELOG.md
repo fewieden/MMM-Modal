@@ -6,6 +6,14 @@
 
 * [Update dom on modal close](https://github.com/fewieden/MMM-Modal/pull/7)
 
+### Added
+
+* Added github workflows
+
+### Removed
+
+* TravisCI integration
+
 ## [1.0.1]
 
 ### Fixed
