@@ -30,7 +30,7 @@ Module.register('MMM-Modal', {
     /**
      * @member {string} requiresVersion - Defines the required minimum version of the MagicMirror framework in order to run this verion of the module.
      */
-    requiresVersion: '2.14.0',
+    requiresVersion: '2.15.0',
 
     /**
      * @member {Object} defaults - Defines the default config values.
@@ -333,12 +333,13 @@ Module.register('MMM-Modal', {
                     this.modal.options.callback(null);
                 }
             }, 300);
-        }, {lockString: this.identifier}, (error) => {
+        }, {lockString: this.identifier, onError: (error) => {
             Log.error('Could not show module because of', error);
+
             if (this.modal && this.modal.options.callback) {
                 this.modal.options.callback(error);
             }
-        });
+        }});
     },
 
     /**
